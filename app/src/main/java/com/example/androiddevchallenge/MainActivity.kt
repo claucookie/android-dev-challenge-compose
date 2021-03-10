@@ -15,10 +15,13 @@
  */
 package com.example.androiddevchallenge
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -43,6 +46,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.androiddevchallenge.data.PuppiesDatasource
 import com.example.androiddevchallenge.data.Puppy
+import com.example.androiddevchallenge.ui.DetailActivity
 import com.example.androiddevchallenge.ui.theme.MyTheme
 
 class MainActivity : AppCompatActivity() {
@@ -53,10 +57,32 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MyTheme {
-                Column(content = {
+                Column {
                     AppBar()
-                    ListOfPuppies(puppiesDatasource.getPuppies())
-                })
+                    ListOfPuppies(puppiesDatasource.getPuppies(), this@MainActivity)
+                }
+            }
+        }
+    }
+
+    @Preview("Light Theme", widthDp = 360, heightDp = 640)
+    @Composable
+    fun LightPreview() {
+        MyTheme {
+            Column {
+                AppBar()
+                ListOfPuppies(puppies, this@MainActivity)
+            }
+        }
+    }
+
+    @Preview("Dark Theme", widthDp = 360, heightDp = 640)
+    @Composable
+    fun DarkPreview() {
+        MyTheme(darkTheme = true) {
+            Column {
+                AppBar()
+                ListOfPuppies(puppies, this@MainActivity)
             }
         }
     }
@@ -64,28 +90,38 @@ class MainActivity : AppCompatActivity() {
 
 @Composable
 fun AppBar() {
-    TopAppBar(title = {
-        Text(text = "My puppies")
-    })
+    TopAppBar(
+        title = { Text(text = "My puppies") }
+    )
 }
 
 
 @Composable
-fun ListOfPuppies(puppies: List<Puppy>) {
-    LazyColumn(content = {
+fun ListOfPuppies(puppies: List<Puppy>, context: Context) {
+    LazyColumn {
         items(puppies) { puppy ->
-            PuppyListItem(puppy)
+            PuppyListItem(puppy) {
+                // Open detail activity
+                val intent = Intent(context, DetailActivity::class.java).apply {
+                    putExtra("puppy", puppy)
+                }
+                context.startActivity(intent)
+            }
         }
-    })
+    }
 }
 
 @Composable
-fun PuppyListItem(puppy: Puppy) {
+fun PuppyListItem(puppy: Puppy, onClick: () -> Unit) {
     val rowModifier = Modifier
         .fillMaxWidth()
         .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 8.dp)
+        .clickable { onClick() }
 
-    Row(verticalAlignment = Alignment.CenterVertically, modifier = rowModifier, content = {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = rowModifier
+    ) {
         Image(
             painter = painterResource(id = puppy.resId),
             contentDescription = null,
@@ -97,28 +133,6 @@ fun PuppyListItem(puppy: Puppy) {
         )
         Spacer(modifier = Modifier.width(16.dp))
         Text(color = MaterialTheme.colors.primary, text = puppy.name, textAlign = TextAlign.Center)
-    })
-}
-
-@Preview("Light Theme", widthDp = 360, heightDp = 640)
-@Composable
-fun LightPreview() {
-    MyTheme {
-        Column(content = {
-            AppBar()
-            ListOfPuppies(puppies)
-        })
-    }
-}
-
-@Preview("Dark Theme", widthDp = 360, heightDp = 640)
-@Composable
-fun DarkPreview() {
-    MyTheme(darkTheme = true) {
-        Column(content = {
-            AppBar()
-            ListOfPuppies(puppies)
-        })
     }
 }
 

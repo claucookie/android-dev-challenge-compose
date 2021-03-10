@@ -1,7 +1,9 @@
 package com.example.androiddevchallenge.data
 
+import android.os.Parcelable
 import androidx.annotation.IdRes
 import com.example.androiddevchallenge.R
+import kotlinx.parcelize.Parcelize
 
 class PuppiesDatasource {
 
@@ -14,5 +16,5 @@ class PuppiesDatasource {
     )
 }
 
-
-class Puppy(val name: String, @IdRes val resId: Int)
+@Parcelize
+class Puppy(val name: String, @IdRes val resId: Int) : Parcelable
