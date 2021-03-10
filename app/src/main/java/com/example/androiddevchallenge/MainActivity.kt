@@ -95,7 +95,6 @@ fun AppBar() {
     )
 }
 
-
 @Composable
 fun ListOfPuppies(puppies: List<Puppy>, context: Context) {
     LazyColumn {
@@ -138,4 +137,3 @@ fun PuppyListItem(puppy: Puppy, onClick: () -> Unit) {
 
 private val puppies
     get() = PuppiesDatasource().getPuppies()
-
